@@ -391,10 +391,7 @@ def main():
     tcep.save_model()
     
     print("\n🎉 TCEP training and evaluation completed!")
-    print("Next steps:")
-    print("1. Build XGBoost optimization engine")
-    print("2. Create blockchain integration")
-    print("3. Build prediction dashboard")
+   
 
 if __name__ == "__main__":
     main()
