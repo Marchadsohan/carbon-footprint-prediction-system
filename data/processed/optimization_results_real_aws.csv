@@ -1,0 +1,8 @@
+strategy,description,carbon_kg_per_day,cost_usd_per_day,carbon_reduction_pct,cost_reduction_pct,annual_carbon_saving_kg,annual_cost_saving_usd
+Baseline (Virginia 24/7),"Current: t2.micro in us-east-1, 8.8 days monitoring",0.03591314844094251,0.2784,0.0,0.0,0.0,0.0
+Temporal Optimization (Scheduling),Stop 2 AM-8 AM (18hr/day). Real CPU avg: 0.068% shows over-provisioning,0.026934861330706883,0.20879999999999999,25.0,25.0,3.277074795236004,25.404
+Geographic Optimization (Regional),Virginia (0.415) → Oregon (0.063 kg CO2/kWh) - Hydroelectric power!,0.0054518755464563326,0.2784,84.8,0.0,11.118364606487456,0.0
+Resource Optimization (Combined),Oregon migration (85%) + 18hr schedule (25%),0.004088906659842249,0.20879999999999999,88.9,25.0,11.615848250101596,25.404
+CBSD (Code Optimization),"5min → 10min monitoring intervals (50% fewer cycles, 10% efficiency)",0.0036800159938580245,0.20879999999999999,89.8,25.0,11.765093343185837,0.0
+DCTR (Dynamic Carbon-Tiered Reliability),EC2 Spot instances (70% cost) + Smart replica scaling (3→2 replicas during high-carbon periods = 15% carbon reduction),0.030526176174801134,0.08352,15.0,70.0,1.9662448771416026,71.13119999999999
+GPCO (Ultimate Multi-Strategy),"Oregon + Scheduling + Code Opt + Spot (89.8% carbon, 77.5% cost)",0.0036800159938580245,0.06263999999999999,89.8,77.5,11.765093343185837,78.75240000000001
