@@ -205,3 +205,43 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+# Real-time monitoring data
+data/realtime/
+data/processed/*.csv
+logs/
+
+# AWS credentials backup
+*.csv
+credentials.csv
+rootkey.csv
+
+# Model files (too large for git)
+models/*.h5
+models/*.pkl
+models/*.joblib
+*.h5
+*.pkl
+*.joblib
+
+# Blockchain data (regenerate as needed)
+data/processed/blockchain_ledger.json
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Large data files
+data/raw/*.csv
+data/*.csv
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/settings.json
+.idea/

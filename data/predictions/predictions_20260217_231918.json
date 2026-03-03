@@ -1,0 +1,172 @@
+[
+  {
+    "timestamp": "2026-02-17T23:10:58.979036",
+    "current_metrics": {
+      "daily_carbon_kg": 2.2764632583143705e-05,
+      "instances_monitored": 3,
+      "avg_cpu_utilization": 0.10832270511745297
+    },
+    "lstm_prediction": {
+      "model": "Heuristic",
+      "predictions": [
+        7.87679936335115e-08,
+        5.748844963010539e-08,
+        4.775353416405348e-08,
+        5.09875142909674e-08,
+        5.4618976016667014e-08,
+        5.385574903648435e-08,
+        5.291870072265071e-08,
+        5.487233746792125e-08,
+        8.45435823932734e-08,
+        7.81958393215869e-08,
+        1.0659969009704522e-07,
+        1.0813969092529748e-07,
+        1.0176993447338333e-07,
+        1.0281474345527642e-07,
+        9.959189883822331e-08,
+        1.1403665223388623e-07,
+        1.0814782611144307e-07,
+        1.0620591608714093e-07,
+        9.6327569690564e-08,
+        7.817879147503819e-08,
+        8.103885858918216e-08,
+        8.862167585167618e-08,
+        8.086112199549014e-08,
+        8.917952985097777e-08
+      ],
+      "total_predicted_kg": 1.9755165763518456e-06,
+      "average_per_hour_kg": 8.23131906813269e-08,
+      "confidence": 0.65
+    },
+    "xgboost_prediction": {
+      "model": "Heuristic",
+      "predictions": [
+        7.977150513766603e-08
+      ],
+      "total_predicted_kg": 7.977150513766603e-08,
+      "average_per_hour_kg": 7.977150513766603e-08,
+      "confidence": 0.65
+    },
+    "recommendations": [
+      {
+        "strategy": "Geographic Migration to Low-Carbon Region",
+        "priority": "HIGH",
+        "reduction_percentage": 73.5,
+        "estimated_saving_kg": 1.673200494861062e-05,
+        "implementation": "Migrate to us-west-2 or ca-central-1 (lower carbon intensity)",
+        "difficulty": "High"
+      },
+      {
+        "strategy": "Resource Right-Sizing",
+        "priority": "MEDIUM",
+        "reduction_percentage": 24.1,
+        "estimated_saving_kg": 5.486276452537633e-06,
+        "implementation": "Downsize instances (current avg CPU: 0.1%)",
+        "difficulty": "Low"
+      },
+      {
+        "strategy": "Code Optimization",
+        "priority": "MEDIUM",
+        "reduction_percentage": 18.2,
+        "estimated_saving_kg": 4.143163130132154e-06,
+        "implementation": "Optimize algorithms, reduce computational complexity",
+        "difficulty": "Medium"
+      },
+      {
+        "strategy": "Dynamic Reliability Adjustment",
+        "priority": "LOW",
+        "reduction_percentage": 29.8,
+        "estimated_saving_kg": 6.783860509776823e-06,
+        "implementation": "Adjust replication factor based on criticality",
+        "difficulty": "High"
+      }
+    ],
+    "total_potential_saving_kg": 3.3145305041057235e-05,
+    "max_reduction_percentage": 73.5
+  },
+  {
+    "timestamp": "2026-02-17T23:16:06.929534",
+    "current_metrics": {
+      "daily_carbon_kg": 2.275847443735778e-05,
+      "instances_monitored": 4,
+      "avg_cpu_utilization": 0.08124202883808973
+    },
+    "lstm_prediction": {
+      "model": "Heuristic",
+      "predictions": [
+        7.809988064577574e-08,
+        5.4513333032006136e-08,
+        6.027087960018083e-08,
+        6.023862272650178e-08,
+        5.881316318879376e-08,
+        5.32185189189575e-08,
+        5.2851477882656325e-08,
+        5.124534282431531e-08,
+        7.608863200928078e-08,
+        7.835477508590303e-08,
+        9.297449458125221e-08,
+        1.0082383196144752e-07,
+        1.0847662655020782e-07,
+        1.0026756201169208e-07,
+        9.985915564303525e-08,
+        9.614576589295434e-08,
+        1.0043525363694124e-07,
+        1.0149897837147469e-07,
+        1.0957466760856642e-07,
+        7.695891755888056e-08,
+        8.083670807090846e-08,
+        8.455972994027966e-08,
+        7.939005754412169e-08,
+        8.09153754353576e-08
+      ],
+      "total_predicted_kg": 1.9364117507214907e-06,
+      "average_per_hour_kg": 8.068382294672878e-08,
+      "confidence": 0.65
+    },
+    "xgboost_prediction": {
+      "model": "Heuristic",
+      "predictions": [
+        8.242400125543081e-08
+      ],
+      "total_predicted_kg": 8.242400125543081e-08,
+      "average_per_hour_kg": 8.242400125543081e-08,
+      "confidence": 0.65
+    },
+    "recommendations": [
+      {
+        "strategy": "Geographic Migration to Low-Carbon Region",
+        "priority": "HIGH",
+        "reduction_percentage": 73.5,
+        "estimated_saving_kg": 1.6727478711457967e-05,
+        "implementation": "Migrate to us-west-2 or ca-central-1 (lower carbon intensity)",
+        "difficulty": "High"
+      },
+      {
+        "strategy": "Resource Right-Sizing",
+        "priority": "MEDIUM",
+        "reduction_percentage": 24.1,
+        "estimated_saving_kg": 5.484792339403225e-06,
+        "implementation": "Downsize instances (current avg CPU: 0.1%)",
+        "difficulty": "Low"
+      },
+      {
+        "strategy": "Code Optimization",
+        "priority": "MEDIUM",
+        "reduction_percentage": 18.2,
+        "estimated_saving_kg": 4.142042347599116e-06,
+        "implementation": "Optimize algorithms, reduce computational complexity",
+        "difficulty": "Medium"
+      },
+      {
+        "strategy": "Dynamic Reliability Adjustment",
+        "priority": "LOW",
+        "reduction_percentage": 29.8,
+        "estimated_saving_kg": 6.7820253823326175e-06,
+        "implementation": "Adjust replication factor based on criticality",
+        "difficulty": "High"
+      }
+    ],
+    "total_potential_saving_kg": 3.3136338780792925e-05,
+    "max_reduction_percentage": 73.5
+  }
+]

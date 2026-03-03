@@ -1,0 +1,162 @@
+{
+  "chain": [
+    {
+      "index": 1,
+      "timestamp": 1771349450.0153263,
+      "datetime": "2026-02-17T23:00:50.015326",
+      "transactions": [],
+      "proof": 100,
+      "previous_hash": "0",
+      "validators": [],
+      "consensus_achieved": true
+    },
+    {
+      "index": 2,
+      "timestamp": 1771349454.9263349,
+      "datetime": "2026-02-17T23:00:54.926334",
+      "transactions": [
+        {
+          "organization": "Carbon-Footprint-Research",
+          "timestamp": "2026-02-17T23:00:54.910021",
+          "instance_id": "monitoring",
+          "instance_type": "continuous",
+          "region": "us-east-1",
+          "baseline_carbon_kg": 2.276538727219746e-05,
+          "optimized_carbon_kg": 2.322069501764141e-06,
+          "carbon_saving_kg": 2.044331777043332e-05,
+          "reduction_percentage": 89.8,
+          "strategy": "continuous_monitoring",
+          "cpu_utilization": 0.11164147844090418,
+          "credits_earned": 0,
+          "transaction_type": "carbon_monitoring",
+          "verified": true
+        }
+      ],
+      "proof": 226,
+      "previous_hash": "419ea62f0eaf411881c16c546ef66449d08acf3e057bd07106cc345e4bcf347f",
+      "validators": [
+        "validator_node_0",
+        "validator_node_1",
+        "validator_node_2",
+        "validator_node_3",
+        "validator_node_4"
+      ],
+      "consensus_achieved": true
+    },
+    {
+      "index": 3,
+      "timestamp": 1771349754.783807,
+      "datetime": "2026-02-17T23:05:54.783807",
+      "transactions": [
+        {
+          "organization": "Carbon-Footprint-Research",
+          "timestamp": "2026-02-17T23:05:54.775358",
+          "instance_id": "monitoring",
+          "instance_type": "continuous",
+          "region": "us-east-1",
+          "baseline_carbon_kg": 2.2764260305911226e-05,
+          "optimized_carbon_kg": 2.321954551202945e-06,
+          "carbon_saving_kg": 2.0442305754708283e-05,
+          "reduction_percentage": 89.8,
+          "strategy": "continuous_monitoring",
+          "cpu_utilization": 0.10668560207224927,
+          "credits_earned": 0,
+          "transaction_type": "carbon_monitoring",
+          "verified": true
+        }
+      ],
+      "proof": 346,
+      "previous_hash": "88ba63bc28a7d5d6713f5ac3d149095994364aa2fc79b290744b329b0c0893b2",
+      "validators": [
+        "validator_node_0",
+        "validator_node_1",
+        "validator_node_2",
+        "validator_node_3",
+        "validator_node_4"
+      ],
+      "consensus_achieved": true
+    },
+    {
+      "index": 4,
+      "timestamp": 1771350058.979036,
+      "datetime": "2026-02-17T23:10:58.979036",
+      "transactions": [
+        {
+          "organization": "Carbon-Footprint-Research",
+          "timestamp": "2026-02-17T23:10:58.963303",
+          "instance_id": "monitoring",
+          "instance_type": "continuous",
+          "region": "us-east-1",
+          "baseline_carbon_kg": 2.276425017132243e-05,
+          "optimized_carbon_kg": 2.3219535174748875e-06,
+          "carbon_saving_kg": 2.0442296653847542e-05,
+          "reduction_percentage": 89.8,
+          "strategy": "continuous_monitoring",
+          "cpu_utilization": 0.10664103483920546,
+          "credits_earned": 0,
+          "transaction_type": "carbon_monitoring",
+          "verified": true
+        }
+      ],
+      "proof": 57,
+      "previous_hash": "5b8a07ce1cce76e89e7ca0dfa1f24a1216b1aad129a32fc2893a371bc3f82d58",
+      "validators": [
+        "validator_node_0",
+        "validator_node_1",
+        "validator_node_2",
+        "validator_node_3",
+        "validator_node_4"
+      ],
+      "consensus_achieved": true
+    },
+    {
+      "index": 5,
+      "timestamp": 1771350366.9206479,
+      "datetime": "2026-02-17T23:16:06.920647",
+      "transactions": [
+        {
+          "organization": "Carbon-Footprint-Research",
+          "timestamp": "2026-02-17T23:16:06.912006",
+          "instance_id": "monitoring",
+          "instance_type": "continuous",
+          "region": "us-east-1",
+          "baseline_carbon_kg": 2.274e-05,
+          "optimized_carbon_kg": 2.31948e-06,
+          "carbon_saving_kg": 2.042052e-05,
+          "reduction_percentage": 89.8,
+          "strategy": "continuous_monitoring",
+          "cpu_utilization": 0.0,
+          "credits_earned": 0,
+          "transaction_type": "carbon_monitoring",
+          "verified": true
+        }
+      ],
+      "proof": 289,
+      "previous_hash": "d6eaaefe3b0f7d314f7835a54a075951a755b0427b6537223563ed6103617994",
+      "validators": [
+        "validator_node_0",
+        "validator_node_1",
+        "validator_node_2",
+        "validator_node_3",
+        "validator_node_4"
+      ],
+      "consensus_achieved": true
+    }
+  ],
+  "carbon_credits": {
+    "Carbon-Footprint-Research": 0
+  },
+  "summary": {
+    "total_blocks": 5,
+    "total_transactions": 4,
+    "total_carbon_credits": 0,
+    "total_co2_saved_kg": 8.174844017898916e-05,
+    "blockchain_hash": "8b0099b2754e30cd2ada551aed2721570a9aa66e067247a2476932b1b4afdfbf",
+    "organizations": 1,
+    "is_valid": true,
+    "avg_mining_time_sec": 0.0,
+    "total_validators": 20,
+    "difficulty": 2
+  },
+  "created": "2026-02-17T23:19:18.223651"
+}
