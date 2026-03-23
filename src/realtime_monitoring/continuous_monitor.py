@@ -14,7 +14,7 @@ from datetime import datetime
 # Add parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
-from src.cloud_connectors.aws_realtime_collector import AWSRealtimeCollector
+from aws_realtime_collector import AWSRealtimeCollector
 
 # Setup logging
 os.makedirs('logs', exist_ok=True)

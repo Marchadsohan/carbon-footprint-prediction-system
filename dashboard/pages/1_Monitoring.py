@@ -1,6 +1,6 @@
 """
 Real-Time Monitoring Dashboard
-Live AWS CloudWatch metrics and carbon tracking
+Live multicloud metrics and carbon tracking — AWS · GCP · Azure
 """
 
 import streamlit as st
@@ -9,167 +9,260 @@ import plotly.graph_objects as go
 import plotly.express as px
 from datetime import datetime
 import os
+import sys
+import glob
 import time
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 st.set_page_config(page_title="Real-Time Monitoring", page_icon="📊", layout="wide")
 
 st.title("📊 Real-Time Monitoring Dashboard")
-st.markdown("Live AWS CloudWatch metrics with 5-minute refresh")
+st.markdown("Live multicloud metrics — AWS · GCP · Azure · 5-minute refresh")
 
-# Auto-refresh controls
-col1, col2 = st.columns([3, 1])
+# ─── Controls ─────────────────────────────────────────────────────────────────
+col1, col2, col3 = st.columns([3, 1, 1])
 with col1:
     st.markdown("### System Status")
 with col2:
+    if st.button("🔄 Collect Live Data", type="primary"):
+        with st.spinner("Collecting from all configured clouds..."):
+            import subprocess
+            subprocess.run(
+                [sys.executable, "run_collector.py"],
+                capture_output=True, text=True, timeout=60
+            )
+        st.success("Collection complete!")
+        st.rerun()
+with col3:
     auto_refresh = st.checkbox("Auto-refresh (10s)", value=False)
-    if st.button("🔄 Refresh Now"):
+    if st.button("Refresh Now"):
         st.rerun()
 
 st.markdown("---")
 
-# Load latest monitoring data
-try:
-    monitoring_files = [f for f in os.listdir('data/realtime') 
-                       if f.startswith('monitoring_') and f.endswith('.csv')]
-    
-    if monitoring_files:
-        latest_file = max([os.path.join('data/realtime', f) for f in monitoring_files],
+
+# ─── Smart data loader ────────────────────────────────────────────────────────
+def load_latest_data():
+    # Priority 1: multicloud master CSV
+    files = sorted(glob.glob("data/realtime/multicloud_*.csv"), reverse=True)
+    if files:
+        df = pd.read_csv(files[0])
+        if 'cloud_provider' not in df.columns:
+            df['cloud_provider'] = 'AWS'
+        return df, files[0], "multicloud"
+
+    # Priority 2: aws_carbon CSV from run_collector
+    files = sorted(glob.glob("data/realtime/aws_carbon_*.csv"), reverse=True)
+    if files:
+        df = pd.read_csv(files[0])
+        df['cloud_provider'] = 'AWS'
+        return df, files[0], "aws_carbon"
+
+    # Priority 3: legacy monitoring CSV
+    try:
+        legacy = [f for f in os.listdir('data/realtime')
+                  if f.startswith('monitoring_') and f.endswith('.csv')]
+        if legacy:
+            latest = max([os.path.join('data/realtime', f) for f in legacy],
                          key=os.path.getmtime)
-        df = pd.read_csv(latest_file)
-        
-        # Current metrics
-        st.subheader("📈 Current Metrics")
-        
-        col1, col2, col3, col4 = st.columns(4)
-        
-        with col1:
-            st.metric(
-                "🖥️ Instances Monitored",
-                len(df),
-                help="Number of active EC2 instances"
+            df = pd.read_csv(latest)
+            df['cloud_provider'] = 'AWS'
+            return df, latest, "legacy"
+    except:
+        pass
+
+    return None, None, None
+
+
+df, source_file, source_type = load_latest_data()
+
+if df is not None:
+
+    # Column aliases
+    cpu_col    = next((c for c in ['cpu_utilization', 'cpu_percent']            if c in df.columns), None)
+    carbon_col = next((c for c in ['carbon_kg_per_day',
+                                   'carbon_emissions_kg_per_day',
+                                   'total_carbon_kg']                           if c in df.columns), None)
+    power_col  = next((c for c in ['actual_power_watts', 'base_power_watts']    if c in df.columns), None)
+
+    st.caption(
+        f"Source: `{os.path.basename(source_file)}` | "
+        f"Type: `{source_type}` | "
+        f"Loaded: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+    )
+
+    # ─── KPI Row ──────────────────────────────────────────────────────────────
+    st.subheader("📈 Current Metrics")
+
+    col1, col2, col3, col4, col5 = st.columns(5)
+    col1.metric("☁️ Clouds Active",
+                df['cloud_provider'].nunique())
+    col2.metric("🖥️ Instances",
+                len(df))
+    col3.metric("💻 Avg CPU",
+                f"{df[cpu_col].mean():.4f}%"     if cpu_col    else "N/A")
+    col4.metric("🌍 Daily Carbon",
+                f"{df[carbon_col].sum():.6f} kg" if carbon_col else "N/A")
+    col5.metric("⚡ Total Power",
+                f"{df[power_col].sum():.1f} W"   if power_col  else "N/A")
+
+    st.markdown("---")
+
+    # ─── Multicloud breakdown (shown only if >1 cloud) ────────────────────────
+    if df['cloud_provider'].nunique() > 1 and carbon_col and cpu_col:
+        st.subheader("☁️ Carbon by Cloud Provider")
+
+        cloud_summary = df.groupby('cloud_provider').agg(
+            carbon=(carbon_col, 'sum'),
+            cpu=(cpu_col, 'mean'),
+            instances=('cloud_provider', 'count')
+        ).reset_index()
+
+        cc1, cc2 = st.columns(2)
+        with cc1:
+            fig_cloud = px.bar(
+                cloud_summary, x='cloud_provider', y='carbon',
+                color='cloud_provider',
+                color_discrete_map={'AWS': '#FF9900', 'GCP': '#4285F4', 'AZURE': '#0089D6'},
+                title="Carbon per Cloud (kg CO₂/day)",
+                text='carbon'
             )
-        
-        with col2:
-            avg_cpu = df['cpu_utilization'].mean()
-            st.metric(
-                "💻 Average CPU",
-                f"{avg_cpu:.1f}%",
-                help="Average CPU utilization across all instances"
+            fig_cloud.update_traces(texttemplate='%{text:.6f}', textposition='outside')
+            fig_cloud.update_layout(
+                height=320, showlegend=False,
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)'
             )
-        
-        with col3:
-            current_carbon = df['total_carbon_kg'].sum()
-            st.metric(
-                "🌍 Current Carbon",
-                f"{current_carbon:.6f} kg",
-                help="Current period carbon emissions"
+            st.plotly_chart(fig_cloud, use_container_width=True)
+
+        with cc2:
+            fig_cpu_cloud = px.bar(
+                cloud_summary, x='cloud_provider', y='cpu',
+                color='cloud_provider',
+                color_discrete_map={'AWS': '#FF9900', 'GCP': '#4285F4', 'AZURE': '#0089D6'},
+                title="Avg CPU per Cloud (%)"
             )
-        
-        with col4:
-            daily_carbon = df['carbon_emissions_kg_per_day'].sum()
-            st.metric(
-                "📅 Daily Projection",
-                f"{daily_carbon:.6f} kg/day",
-                help="Estimated daily carbon emissions"
+            fig_cpu_cloud.update_layout(
+                height=320, showlegend=False,
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)'
             )
-        
+            st.plotly_chart(fig_cpu_cloud, use_container_width=True)
+
         st.markdown("---")
-        
-        # Instance details
-        st.subheader("🖥️ Instance Details")
-        
-        display_df = df[[
-            'instance_name', 'instance_type', 'region',
-            'cpu_utilization', 'actual_power_watts',
-            'carbon_emissions_kg_per_day'
-        ]].copy()
-        
-        display_df.columns = [
-            'Instance Name', 'Instance Type', 'Region',
-            'CPU %', 'Power (W)', 'Daily Carbon (kg)'
-        ]
-        
-        st.dataframe(
-            display_df.style.format({
-                'CPU %': '{:.2f}',
-                'Power (W)': '{:.2f}',
-                'Daily Carbon (kg)': '{:.6f}'
-            }).background_gradient(subset=['CPU %'], cmap='RdYlGn_r'),
-            use_container_width=True,
-            hide_index=True
-        )
-        
-        st.markdown("---")
-        
-        # Charts
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.subheader("💻 CPU Utilization by Instance")
+
+    # ─── Instance table ───────────────────────────────────────────────────────
+    st.subheader("🖥️ Instance Details")
+
+    table_cols = [c for c in
+                  ['instance_name', 'cloud_provider', 'instance_type',
+                   'region', cpu_col, power_col, carbon_col]
+                  if c and c in df.columns]
+
+    fmt = {}
+    if cpu_col    in df.columns: fmt[cpu_col]    = '{:.4f}'
+    if power_col  in df.columns: fmt[power_col]  = '{:.2f}'
+    if carbon_col in df.columns: fmt[carbon_col] = '{:.6f}'
+
+    styled = df[table_cols].style.format(fmt)
+    if cpu_col in df.columns:
+        styled = styled.background_gradient(subset=[cpu_col], cmap='RdYlGn_r')
+
+    st.dataframe(styled, use_container_width=True, hide_index=True)
+
+    st.markdown("---")
+
+    # ─── Charts Row ───────────────────────────────────────────────────────────
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if cpu_col and 'instance_name' in df.columns:
+            st.subheader("💻 CPU Utilization")
             fig_cpu = px.bar(
-                df,
-                x='instance_name',
-                y='cpu_utilization',
-                color='cpu_utilization',
-                color_continuous_scale='RdYlGn_r',
-                title="CPU Utilization"
+                df, x='instance_name', y=cpu_col,
+                color='cloud_provider',
+                color_discrete_map={'AWS': '#FF9900', 'GCP': '#4285F4', 'AZURE': '#0089D6'},
+                title="CPU % by Instance"
             )
-            fig_cpu.update_layout(showlegend=False)
+            fig_cpu.update_layout(
+                height=350, showlegend=True,
+                plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)'
+            )
             st.plotly_chart(fig_cpu, use_container_width=True)
-        
-        with col2:
-            st.subheader("🌍 Carbon Emissions by Instance")
+
+    with col2:
+        if carbon_col and 'instance_name' in df.columns:
+            st.subheader("🌍 Carbon Distribution")
             fig_carbon = px.pie(
-                df,
-                values='carbon_emissions_kg_per_day',
-                names='instance_name',
-                title="Daily Carbon Distribution"
+                df, values=carbon_col, names='instance_name',
+                title="Daily Carbon by Instance",
+                color_discrete_sequence=px.colors.qualitative.Set2
             )
+            fig_carbon.update_layout(height=350)
             st.plotly_chart(fig_carbon, use_container_width=True)
-        
-        # Optimization potential
-        st.markdown("---")
-        st.subheader("💚 Optimization Potential")
-        
-        potential_saving = daily_carbon * 0.898
-        potential_cost = potential_saving * 6.70 * 365
-        
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.metric(
-                "Daily Saving Potential",
-                f"{potential_saving:.6f} kg CO2",
-                f"{89.8}% reduction"
-            )
-        
-        with col2:
-            st.metric(
-                "Annual Cost Saving",
-                f"${potential_cost:.2f}",
-                help="Based on $6.70 per kg CO2"
-            )
-        
-        with col3:
-            trees_equivalent = int(potential_saving * 365 * 50)
-            st.metric(
-                "Trees Equivalent",
-                f"{trees_equivalent:,} trees/year",
-                help="Estimated tree planting equivalent"
-            )
-        
-        # Last updated
-        st.caption(f"📅 Last Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        
+
+    # ─── Historical CSV files list ────────────────────────────────────────────
+    st.markdown("---")
+    st.subheader("📁 Collection History")
+
+    all_files = (
+        sorted(glob.glob("data/realtime/multicloud_*.csv"), reverse=True) +
+        sorted(glob.glob("data/realtime/aws_carbon_*.csv"),  reverse=True)
+    )
+    if all_files:
+        file_info = []
+        for fp in all_files[:10]:
+            try:
+                size = os.path.getsize(fp)
+                mtime = datetime.fromtimestamp(os.path.getmtime(fp))
+                rows  = sum(1 for _ in open(fp)) - 1
+                file_info.append({
+                    "File":     os.path.basename(fp),
+                    "Records":  rows,
+                    "Size":     f"{size/1024:.1f} KB",
+                    "Collected": mtime.strftime("%Y-%m-%d %H:%M:%S")
+                })
+            except:
+                pass
+        st.dataframe(pd.DataFrame(file_info), use_container_width=True, hide_index=True)
     else:
-        st.warning("⚠️ No monitoring data available")
-        st.info("Start the monitoring system to see live data")
-        st.code("python src/realtime_monitoring/ml_enabled_monitor.py", language="bash")
+        st.info("No history yet — click Collect Live Data above")
 
-except Exception as e:
-    st.error(f"Error loading monitoring data: {e}")
+    # ─── Optimization potential ───────────────────────────────────────────────
+    st.markdown("---")
+    st.subheader("💚 Optimization Potential (GPCO — 89.8% Reduction)")
 
-# Auto-refresh logic
+    if carbon_col:
+        daily_carbon     = df[carbon_col].sum()
+        potential_saving = daily_carbon * 0.898
+        potential_cost   = potential_saving * 6.70 * 365
+
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Daily Saving Potential",
+                    f"{potential_saving:.6f} kg CO2", "89.8% reduction")
+        col2.metric("Annual Cost Saving",
+                    f"${potential_cost:.2f}", help="Based on $6.70 per kg CO2")
+        col3.metric("Trees Equivalent",
+                    f"{int(potential_saving * 365 * 50):,} trees/year")
+
+    st.caption(f"Last Updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+else:
+    st.warning("⚠️ No monitoring data available")
+    st.info("Click **Collect Live Data** above to fetch from all configured clouds")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.code("python run_collector.py", language="bash")
+    with col2:
+        st.markdown("""
+        **What this does:**
+        - Auto-detects AWS/GCP/Azure from `.env`
+        - Fetches real CPU from CloudWatch/Monitoring
+        - Calculates carbon emissions
+        - Saves CSV to `data/realtime/`
+        """)
+
+# ─── Auto-refresh ─────────────────────────────────────────────────────────────
 if auto_refresh:
     time.sleep(10)
     st.rerun()
